@@ -3,8 +3,6 @@ package tuple;
 import fields.Complex;
 import org.junit.Assert;
 import org.junit.Test;
-import tuple.Tuple;
-import utils.Pair;
 import utils.StopWatch;
 import utils.StringUtils;
 

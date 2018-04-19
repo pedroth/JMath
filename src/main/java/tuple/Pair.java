@@ -1,4 +1,6 @@
-package utils;
+package tuple;
+
+import utils.StringUtils;
 
 public class Pair<K, V> {
     private K first;

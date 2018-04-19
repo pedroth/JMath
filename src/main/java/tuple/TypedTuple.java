@@ -1,7 +1,6 @@
 package tuple;
 
 import exceptions.MatrixRunTimeException;
-import utils.Pair;
 import utils.StringUtils;
 
 import java.util.Arrays;

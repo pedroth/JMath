@@ -38,10 +38,14 @@ public class DenseNDArrayTest {
         Assert.assertTrue(table.get(new int[] { 0, 0, 0 }) == 0);
         Assert.assertTrue(table.get(new int[] { 1, 1, 1 }) == 100 && table.get(new int[] { 1, 2, 1 }) == 100);
         Assert.assertTrue(table.get(new int[] { 2, 2, 2 }) == 26);
+
     }
 
     @Test
     public void denseCreationTest() {
-        DenseNDArray<Integer> denseNDArray = new DenseNDArray<>(new int[]{1});
+        String x = "0:";
+        String y = "0";
+        System.out.println(x.split(":").length);
+        System.out.println(y.split(":").length);
     }
 }

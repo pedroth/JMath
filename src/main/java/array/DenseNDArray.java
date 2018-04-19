@@ -2,14 +2,17 @@ package array;
 
 import exceptions.MatrixRunTimeException;
 import interval.Interval;
-import tuple.Tuple;
+import lombok.extern.slf4j.Slf4j;
 import tuple.TypedTuple;
-import utils.*;
+import utils.ArrayUtils;
+import utils.MathUtil;
+import utils.Printable;
+import utils.StringUtils;
 
-import java.net.Inet4Address;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -42,8 +45,8 @@ public class DenseNDArray<T> implements Printable {
      * @param dim the dim
      */
     public DenseNDArray(int[] dim) {
-        this.dim = dim;
-        computePowers(dim);
+        this.dim = Optional.ofNullable(dim).orElseThrow(()-> new MatrixRunTimeException("null input exception"));
+        this.computePowers(dim);
         this.denseNDArray = new Object[this.powers[this.powers.length - 1]];
     }
 
@@ -52,11 +55,20 @@ public class DenseNDArray<T> implements Printable {
         this.denseNDArray[0] = element;
     }
 
-    public DenseNDArray(T ... elements) {
-        this(new int[]{elements.length});
-        for (int i = 0; i < elements.length; i++) {
-            this.denseNDArray[i] = elements[i];
+    /**
+     * Array in row major form
+     * @param elements
+     */
+    public DenseNDArray(T[] elements, int[] dim) {
+        this.dim = Optional.ofNullable(dim).orElseThrow(()-> new MatrixRunTimeException("null input exception"));
+        this.computePowers(dim);
+        if (elements == null) {
+          throw new MatrixRunTimeException("null input exception");
         }
+        if(elements.length != this.powers[this.powers.length - 1]) {
+            throw new MatrixRunTimeException("incompatible dimension size");
+        }
+        this.denseNDArray = Arrays.copyOf(elements, elements.length);
     }
 
     private DenseNDArray(DenseNDArray denseNDArray) {
@@ -153,7 +165,7 @@ public class DenseNDArray<T> implements Printable {
      * @param x the x
      * @param vol the vol
      */
-    public void set(String x, DenseNDArray<T> vol) {
+    public DenseNDArray<T> set(String x, DenseNDArray<T> vol) {
         Interval<Integer>[] intervals = getIntervalFromStr(x);
         int size = vol.size();
         int[] y = new int[dim.length];
@@ -168,6 +180,7 @@ public class DenseNDArray<T> implements Printable {
             }
             this.set(y, (T) vol.denseNDArray[i]);
         }
+        return this;
     }
 
     private int[] computeNewDim(Interval<Integer>[] intervals) {
@@ -198,7 +211,7 @@ public class DenseNDArray<T> implements Printable {
                     break;
                 case 1:
                     Integer integer = Integer.valueOf(intervalBounds[0]);
-                    intervals[i] = new Interval<>(integer, integer);
+                    intervals[i] = new Interval<>(integer, split[i].contains(":") ? this.dim[i] - 1 : integer);
                     break;
                 case 2:
                     int xmin = (int) MathUtil.clamp(Integer.valueOf(intervalBounds[0]), 0, dim[i] - 1);
@@ -301,9 +314,12 @@ public class DenseNDArray<T> implements Printable {
         public DenseNDArray<K> build() {
             int[] dim = this.listOfLowerDimArray.get(0).getDim();
             int size = this.listOfLowerDimArray.size();
-            List<Integer> arrayList = Arrays.stream(dim).boxed().collect(Collectors.toList());
-            arrayList.add(size);
-            return new DenseNDArray<>(new int[]{1,1});
+            int[] concat = ArrayUtils.concat(dim, size);
+            DenseNDArray<K> dense = new DenseNDArray<>(concat);
+            for (int i = 0; i < size; i++) {
+                dense.set(StringUtils.interp(""), null);
+            }
+            return null;
         }
     }
 }
