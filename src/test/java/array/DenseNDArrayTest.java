@@ -39,6 +39,7 @@ public class DenseNDArrayTest {
         Assert.assertTrue(table.get(new int[] { 1, 1, 1 }) == 100 && table.get(new int[] { 1, 2, 1 }) == 100);
         Assert.assertTrue(table.get(new int[] { 2, 2, 2 }) == 26);
 
+        System.out.println(table.get("1:,0:,:"));
     }
 
     @Test

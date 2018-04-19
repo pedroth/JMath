@@ -8,6 +8,7 @@ import utils.StringUtils;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 public class TupleTest {
 
@@ -53,5 +54,15 @@ public class TupleTest {
         }
         Pair<Double, Double> pair = Pair.of(eleapsedTimeTuples / samples, 2 * (eleapsedTimeList / samples));
         System.out.println(StringUtils.interp("{} : {}", pair, pair.getFirst() / pair.getSecond()));
+    }
+
+    @Test
+    public void testPointer() {
+        List<String> list = Arrays.asList("1+2i", "1-2i");
+        Tuple tuple = new Tuple(1, new Tuple(1, "Pedro"), list);
+        System.out.println(tuple);
+        list.set(1, "0");
+        List<String> listTuple = tuple.get(2);
+        Assert.assertTrue("0".equals(listTuple.get(1)));
     }
 }
