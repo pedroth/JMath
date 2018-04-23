@@ -78,6 +78,11 @@ public class Complex implements AlgebraicField<Complex> {
     }
 
     @Override
+    public Complex scale(double r) {
+        return new Complex(real * r, img * r);
+    }
+
+    @Override
     public double squareNorm() {
         return this.conj().prod(this).getReal();
     }

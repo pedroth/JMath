@@ -3,6 +3,7 @@ package matrix;
 import array.DenseNDArray;
 import exceptions.MatrixRunTimeException;
 import fields.AlgebraicField;
+import tuple.TypedTuple;
 import utils.Printable;
 
 import java.util.Optional;
@@ -29,8 +30,28 @@ public class DMatrix<T extends AlgebraicField<T>> implements Matrix<T>, Printabl
             throw new MatrixRunTimeException("Array size incompatible with matrix size");
         }
         this.matrix = new DenseNDArray<>(new int[]{lines, columns});
-
     }
+
+    @Override
+    public T get() {
+        return this.matrix.get();
+    }
+
+    @Override
+    public T get(TypedTuple<Integer> x) {
+        return this.get(x);
+    }
+
+    @Override
+    public T get(int[] x) {
+        return this.matrix.get(x);
+    }
+
+    @Override
+    public Matrix<T> get(String s) {
+        return null;
+    }
+
     @Override
     public Matrix<T> add(Matrix<T> b) {
         return null;
@@ -49,6 +70,11 @@ public class DMatrix<T extends AlgebraicField<T>> implements Matrix<T>, Printabl
     @Override
     public Matrix<T> solve(Matrix<T> b) {
         return null;
+    }
+
+    @Override
+    public Matrix<T> scale(double r) {
+        return this.apply(x -> x.scale(r));
     }
 
     @Override

@@ -68,6 +68,11 @@ public class Real implements AlgebraicField<Real> {
     }
 
     @Override
+    public Real scale(double r) {
+        return new Real(real * r);
+    }
+
+    @Override
     public double squareNorm() {
         return this.real * this.real;
     }

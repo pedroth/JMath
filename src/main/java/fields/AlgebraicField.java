@@ -25,6 +25,8 @@ public interface AlgebraicField<T extends AlgebraicField> extends Copyable<T> {
 
     T get();
 
+    T scale(double r);
+
     default <R> R map(Function<T, R> mapFunction) {
         return mapFunction.apply(this.get());
     }

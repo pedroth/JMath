@@ -87,6 +87,10 @@ public class DenseNDArray<T> implements Printable {
         }
     }
 
+    public T get() {
+        //Assume there is at least one element
+        return (T) this.denseNDArray[0];
+    }
     /**
      * Get t.
      *
@@ -317,9 +321,10 @@ public class DenseNDArray<T> implements Printable {
             int[] concat = ArrayUtils.concat(dim, size);
             DenseNDArray<K> dense = new DenseNDArray<>(concat);
             for (int i = 0; i < size; i++) {
-                dense.set(StringUtils.interp(""), null);
+                DenseNDArray<K> vol = listOfLowerDimArray.get(i);
+                dense.set(StringUtils.interp("{}{}", StringUtils.mult(":,", vol.dim.length), i), vol);
             }
-            return null;
+            return dense;
         }
     }
 }
