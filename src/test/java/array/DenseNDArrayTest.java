@@ -51,10 +51,15 @@ public class DenseNDArrayTest {
 
     @Test
     public void denseCreationTest() {
-        //TODO
-        String x = "0:";
-        String y = "0";
-        System.out.println(x.split(":").length);
-        System.out.println(y.split(":").length);
+        new DenseNDArray(new int[]{3, 3}).toString();
+
+
+        DenseNDArray cube = DenseNDArray.builder()
+                .add(new DenseNDArray(new Double[]{1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0}, new int[]{3, 3}))
+                .add(new DenseNDArray(new Double[]{1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0}, new int[]{3, 3}))
+                .add(new DenseNDArray(new Double[]{1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0}, new int[]{3, 3}))
+                .build();
+
+        Assert.assertTrue(Arrays.equals(new int[]{3, 3, 3}, cube.getDim()));
     }
 }

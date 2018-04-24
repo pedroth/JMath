@@ -302,7 +302,7 @@ public class DenseNDArray<T> implements Printable {
             this.listOfLowerDimArray = new ArrayList<>();
         }
 
-        public void add(DenseNDArray<K> array) {
+        public DenseNDArrayBuilder<K> add(DenseNDArray<K> array) {
             if (this.listOfLowerDimArray.isEmpty()) {
                 this.listOfLowerDimArray.add(array);
             } else {
@@ -313,6 +313,7 @@ public class DenseNDArray<T> implements Printable {
                 }
                 listOfLowerDimArray.add(array);
             }
+            return this;
         }
 
         public DenseNDArray<K> build() {
