@@ -266,18 +266,17 @@ public class DenseNDArray<T> implements Printable {
 
     @Override
     public String toString() {
-        return toStringRecursive(TypedTuple.EMPTY, this.dim[this.dim.length - 1]).toString();
+        return toStringRecursive(TypedTuple.EMPTY).toString();
     }
 
-    private StringBuilder toStringRecursive(TypedTuple<Integer> coord, int d) {
+    private StringBuilder toStringRecursive(TypedTuple<Integer> coord) {
         StringBuilder stringBuilder = new StringBuilder();
-        if (d > this.dim.length) {
-            return stringBuilder;
-        }
-        if(coord.size() != this.dim.length) {
+
+        int size = coord.size();
+        if(size != this.dim.length) {
             stringBuilder.append("[ ");
-            for (int j = 0; j < this.dim[d - 1]; j++) {
-                stringBuilder.append(toStringRecursive(new TypedTuple<>(j).union(coord), d - 1));
+            for (int j = 0; j < this.dim[this.dim.length - 1 - size]; j++) {
+                stringBuilder.append(toStringRecursive(new TypedTuple<>(j).union(coord)));
             }
             stringBuilder.append(" ]");
         } else  {
