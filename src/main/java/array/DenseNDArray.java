@@ -154,7 +154,7 @@ public class DenseNDArray<T> implements Printable {
             for (int j = 0; j < intervals.length; j++) {
                 Interval<Integer> interval = intervals[j];
                 int dx = interval.getXmax() - interval.getXmin();
-                int index = i % newDenseNDArray.powers[k + 1] / newDenseNDArray.powers[k];
+                int index = i % this.powers[k + 1] / this.powers[k];
                 k = dx == 0 ? k : k + 1;
                 y[j] = dx == 0 ? interval.getXmin() : interval.getXmin() + index;
             }
@@ -178,7 +178,7 @@ public class DenseNDArray<T> implements Printable {
             for (int j = 0; j < intervals.length; j++) {
                 Interval<Integer> interval = intervals[j];
                 int dx = interval.getXmax() - interval.getXmin();
-                int index = i % vol.powers[k + 1] / vol.powers[k];
+                int index = i % this.powers[k + 1] / this.powers[k];
                 k = dx == 0 ? k : k + 1;
                 y[j] = dx == 0 ? interval.getXmin() : interval.getXmin() + index;
             }
