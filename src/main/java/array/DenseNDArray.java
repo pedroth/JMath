@@ -16,34 +16,16 @@ import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-/**
- * The type Dense nD array. Immutable size.
- * @param <T>  the type parameter
- */
 public class DenseNDArray<T> implements Printable {
-    /**
-     * The Dense nD array.
-     */
     /*
      * row major array
      */
     private Object[] denseNDArray;
 
-    /**
-     * The Powers.
-     */
     private int[] powers;
 
-    /**
-     * The Dim.
-     */
     private int[] dim;
 
-    /**
-     * Instantiates a new Dense nD array.
-     *
-     * @param dim the dim
-     */
     public DenseNDArray(int[] dim) {
         this.dim = Optional.ofNullable(dim).orElseThrow(()-> new MatrixRunTimeException("null input exception"));
         this.computePowers(dim);
@@ -55,10 +37,6 @@ public class DenseNDArray<T> implements Printable {
         this.denseNDArray[0] = element;
     }
 
-    /**
-     * Array in row major form
-     * @param elements
-     */
     public DenseNDArray(T[] elements, int[] dim) {
         this.dim = Optional.ofNullable(dim).orElseThrow(()-> new MatrixRunTimeException("null input exception"));
         this.computePowers(dim);
@@ -91,12 +69,6 @@ public class DenseNDArray<T> implements Printable {
         //Assume there is at least one element
         return (T) this.denseNDArray[0];
     }
-    /**
-     * Get t.
-     *
-     * @param x the x
-     * @return the t
-     */
     public T get(int[] x) {
         checkIndexDimension(x.length);
         return (T) this.denseNDArray[getIndex(x)];
@@ -108,12 +80,6 @@ public class DenseNDArray<T> implements Printable {
         return (T) this.denseNDArray[getIndex(y)];
     }
 
-    /**
-     * Set value.
-     *
-     * @param x the x
-     * @param value the value
-     */
     public void set(int[] x, T value) {
         checkIndexDimension(x.length);
         denseNDArray[getIndex(x)] = value;
@@ -125,11 +91,6 @@ public class DenseNDArray<T> implements Printable {
         denseNDArray[getIndex(y)] = value;
     }
 
-    /**
-     * For each.
-     *
-     * @param function the function
-     */
     public void forEach(Function<T, T> function) {
         int size = size();
         for (int i = 0; i < size; i++) {
@@ -137,12 +98,6 @@ public class DenseNDArray<T> implements Printable {
         }
     }
 
-    /**
-     * Get dense nD array.
-     *
-     * @param x the x
-     * @return the dense nD array
-     */
     public DenseNDArray<T> get(String x) {
         Interval<Integer>[] intervals = getIntervalFromStr(x);
         int[] newDim = computeNewDim(intervals);
@@ -163,12 +118,6 @@ public class DenseNDArray<T> implements Printable {
         return newDenseNDArray;
     }
 
-    /**
-     * Set void.
-     *
-     * @param x the x
-     * @param vol the vol
-     */
     public DenseNDArray<T> set(String x, DenseNDArray<T> vol) {
         Interval<Integer>[] intervals = getIntervalFromStr(x);
         int size = vol.size();
@@ -232,21 +181,15 @@ public class DenseNDArray<T> implements Printable {
         return intervals;
     }
 
-    /**
-     * Size int.
-     *
-     * @return the int
-     */
     public int size() {
         return this.powers[this.powers.length - 1];
     }
 
-    /**
-     * Get dim.
-     *
-     * @return the int [ ]
-     */
     public int[] getDim() {
+        return this.dim;
+    }
+
+    public int[] shape() {
         return this.dim;
     }
 
@@ -290,11 +233,6 @@ public class DenseNDArray<T> implements Printable {
     }
 
 
-    /**
-     * Dense Array builder allows change in size.
-     * Size is changing according valid concatenation rules
-     * @param <K>
-     */
     public static class DenseNDArrayBuilder<K> {
         private List<DenseNDArray<K>> listOfLowerDimArray;
         DenseNDArrayBuilder() {

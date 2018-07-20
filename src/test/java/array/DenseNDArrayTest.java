@@ -26,9 +26,10 @@ public class DenseNDArrayTest {
         Assert.assertTrue(table.get("1,:,:").get(new int[]{2, 2}) == 25);
 
         DenseNDArray<Integer> secondTable = table.get("0 : 1, 1 : 2 , : ");
-        Assert.assertTrue(secondTable.get(new int[]{1, 1, 0}) == 7);
-        Assert.assertTrue(secondTable.get(new int[]{1, 1, 1}) == 16);
-        Assert.assertTrue(secondTable.get(new int[]{1, 1, 2}) == 25);
+        System.out.println(secondTable);
+        Assert.assertTrue(secondTable.get(new int[]{1, 1, 0}) == 6);
+        Assert.assertTrue(secondTable.get(new int[]{1, 1, 1}) == 10);
+        Assert.assertTrue(secondTable.get(new int[]{1, 1, 2}) == 14);
 
         DenseNDArray<Integer> thirdTable = new DenseNDArray<>(new int[]{3, 3});
         for (int j = 0; j < 3; j++) {
@@ -45,7 +46,7 @@ public class DenseNDArrayTest {
 
         DenseNDArray<Integer> denseNDArray = table.get("1:,0:,:");
         Assert.assertTrue(Arrays.equals(denseNDArray.getDim(), new int[]{2, 3, 3}));
-        Assert.assertTrue(14 == denseNDArray.get(TypedTuple.of(1, 1, 1)));
+        Assert.assertTrue(100 == denseNDArray.get(TypedTuple.of(1, 1, 1)));
 
     }
 
