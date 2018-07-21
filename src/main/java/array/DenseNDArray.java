@@ -49,7 +49,7 @@ public class DenseNDArray<T> implements Printable {
         this.denseNDArray = Arrays.copyOf(elements, elements.length);
     }
 
-    private DenseNDArray(DenseNDArray denseNDArray) {
+    public DenseNDArray(DenseNDArray denseNDArray) {
         this.dim = Arrays.copyOf(denseNDArray.dim, denseNDArray.dim.length);
         this.powers = Arrays.copyOf(denseNDArray.powers, denseNDArray.powers.length);
         this.denseNDArray = Arrays.copyOf(denseNDArray.denseNDArray, denseNDArray.denseNDArray.length);
