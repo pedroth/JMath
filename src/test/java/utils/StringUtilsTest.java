@@ -9,4 +9,5 @@ public class StringUtilsTest {
         String interp = StringUtils.interp("{} : {}", 1, 2);
         Assert.assertTrue("1 : 2".equals(interp));
     }
+
 }
