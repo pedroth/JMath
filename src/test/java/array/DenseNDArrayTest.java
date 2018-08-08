@@ -75,6 +75,6 @@ public class DenseNDArrayTest {
                 .build();
 
         Assert.assertTrue(Arrays.equals(new int[]{3, 3, 3}, cube.getDim()));
-        Assert.assertTrue(array.get(TypedTuple.of(2,2)).equals(cube.get(":,:,0").get(TypedTuple.of(2,2))));
+        Assert.assertTrue(array.get(TypedTuple.of(2,2)).equals(cube.get(":,:,1").get(TypedTuple.of(2,2))));
     }
 }
