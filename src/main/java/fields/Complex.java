@@ -73,11 +73,6 @@ public class Complex implements AlgebraicField<Complex> {
     }
 
     @Override
-    public Complex get() {
-        return this;
-    }
-
-    @Override
     public Complex scale(double r) {
         return new Complex(real * r, img * r);
     }

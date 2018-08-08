@@ -21,6 +21,13 @@ public class DenseNDArrayTest {
         Assert.assertEquals(denseNDArray1.get(TypedTuple.of(0,0)), 1.0, 1E-10);
         Assert.assertEquals(denseNDArray1.get(TypedTuple.of(4,0)), 5.0, 1E-10);
         Assert.assertEquals(denseNDArray1.get(TypedTuple.of(8,0)), 9.0, 1E-10);
+
+        final DenseNDArray<Double> denseNDArray2 = new DenseNDArray<>(denseNDArray, new int[]{9});
+        Assert.assertEquals(denseNDArray2.get(TypedTuple.of(0)), 1.0, 1E-10);
+        Assert.assertEquals(denseNDArray2.get(TypedTuple.of(4)), 5.0, 1E-10);
+        Assert.assertEquals(denseNDArray2.get(TypedTuple.of(8)), 9.0, 1E-10);
+
+        Assert.assertEquals(denseNDArray.get("1,2").get(), 6.0, 1E-10);
     }
 
 

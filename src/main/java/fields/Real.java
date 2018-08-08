@@ -11,7 +11,7 @@ public class Real implements AlgebraicField<Real> {
         this.real = x;
     }
 
-    double getDouble() {
+    public double getDouble() {
         return this.real;
     }
 
@@ -60,11 +60,6 @@ public class Real implements AlgebraicField<Real> {
     public Real reciprocal() {
         // uncheck division by zero for performance reasons
         return new Real(1.0 / this.real);
-    }
-
-    @Override
-    public Real get() {
-        return this;
     }
 
     @Override

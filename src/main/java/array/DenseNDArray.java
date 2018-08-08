@@ -67,6 +67,11 @@ public class DenseNDArray<T> implements Printable, Copyable<DenseNDArray<T>> {
         this.powers = new int[dim.length + 1];
         int acc = 1;
         this.powers[0] = acc;
+        // special case
+        if(dim.length == 1) {
+            this.powers[1] = dim[0];
+            return;
+        }
         for (int i = 0; i < dim.length; i++) {
             // to be row major like numpy
             int j = i < 2 ? aux[i] : i;
@@ -112,7 +117,7 @@ public class DenseNDArray<T> implements Printable, Copyable<DenseNDArray<T>> {
     public DenseNDArray<T> get(String x) {
         Interval<Integer>[] intervals = getIntervalFromStr(x);
         int[] newDim = computeNewDim(intervals);
-        DenseNDArray<T> newDenseNDArray = new DenseNDArray<>(newDim);
+        DenseNDArray<T> newDenseNDArray = new DenseNDArray<>(newDim.length == 0 ? new int[]{1} : newDim);
         int size = newDenseNDArray.size();
         int[] y = new int[dim.length];
         for (int i = 0; i < size; i++) {
@@ -207,6 +212,8 @@ public class DenseNDArray<T> implements Printable, Copyable<DenseNDArray<T>> {
     private int getIndex(int[] x) {
         int[] aux = {1, 0};
         int index = 0;
+        //special case
+        if(x.length == 1) return x[0];
         for (int i = 0; i < dim.length; i++) {
             // to be row major like numpy
             int j = i < 2 ? aux[i] : i;
