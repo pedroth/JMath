@@ -28,6 +28,7 @@ public class DenseNDArrayTest {
         Assert.assertEquals(denseNDArray2.get(TypedTuple.of(8)), 9.0, 1E-10);
 
         Assert.assertEquals(denseNDArray.get("1,2").get(), 6.0, 1E-10);
+        Assert.assertEquals(denseNDArray.get("1,1").get(), 5.0, 1E-10);
     }
 
 
