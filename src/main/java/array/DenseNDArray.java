@@ -11,9 +11,13 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
 
+/**
+ * N-dimensional array implementation in column major order
+ * @param <T>
+ */
 public class DenseNDArray<T> implements Printable, Copyable<DenseNDArray<T>> {
     /*
-     * row major array
+     * column major array
      */
     private Object[] denseNDArray;
 
@@ -23,7 +27,7 @@ public class DenseNDArray<T> implements Printable, Copyable<DenseNDArray<T>> {
 
     public DenseNDArray(int[] dim) {
         this.dim = Optional.ofNullable(dim).orElseThrow(() -> new MatrixRunTimeException("null input exception"));
-        this.computePowers(dim);
+        this.powers = this.computePowers(dim);
         this.denseNDArray = new Object[this.powers[this.powers.length - 1]];
     }
 
@@ -34,7 +38,7 @@ public class DenseNDArray<T> implements Printable, Copyable<DenseNDArray<T>> {
 
     public DenseNDArray(T[] elements, int[] dim) {
         this.dim = Optional.ofNullable(dim).orElseThrow(() -> new MatrixRunTimeException("null input exception"));
-        this.computePowers(dim);
+        this.powers = this.computePowers(dim);
         if (elements == null) {
             throw new MatrixRunTimeException("null input exception");
         }
@@ -52,7 +56,7 @@ public class DenseNDArray<T> implements Printable, Copyable<DenseNDArray<T>> {
 
     public DenseNDArray(DenseNDArray denseNDArray, int[] dim) {
         this.dim = Arrays.copyOf(dim, dim.length);
-        this.computePowers(this.dim);
+        this.powers = this.computePowers(this.dim);
         if (this.powers[this.powers.length - 1] != denseNDArray.size())
             throw new MatrixRunTimeException(StringUtils.interp("Shape not compatible, actual shape {}", TypedTuple.of(this.dim)));
         this.denseNDArray = Arrays.copyOf(denseNDArray.denseNDArray, denseNDArray.denseNDArray.length);
@@ -60,24 +64,6 @@ public class DenseNDArray<T> implements Printable, Copyable<DenseNDArray<T>> {
 
     public static DenseNDArrayBuilder builder() {
         return new DenseNDArray.DenseNDArrayBuilder();
-    }
-
-    private void computePowers(int[] dim) {
-        int[] aux = {1, 0};
-        this.powers = new int[dim.length + 1];
-        int acc = 1;
-        this.powers[0] = acc;
-        // special case
-        if(dim.length == 1) {
-            this.powers[1] = dim[0];
-            return;
-        }
-        for (int i = 0; i < dim.length; i++) {
-            // to be row major like numpy
-            int j = i < 2 ? aux[i] : i;
-            acc *= dim[j];
-            this.powers[i + 1] = acc;
-        }
     }
 
     public T get() {
@@ -116,40 +102,93 @@ public class DenseNDArray<T> implements Printable, Copyable<DenseNDArray<T>> {
 
     public DenseNDArray<T> get(String x) {
         Interval<Integer>[] intervals = getIntervalFromStr(x);
+
         int[] newDim = computeNewDim(intervals);
         DenseNDArray<T> newDenseNDArray = new DenseNDArray<>(newDim.length == 0 ? new int[]{1} : newDim);
+
+        int[] y = new int[this.dim.length];
+
         int size = newDenseNDArray.size();
-        int[] y = new int[dim.length];
+
+        int[] dx = new int[intervals.length];
+        for (int i = 0; i < intervals.length; i++) {
+            int diff = intervals[i].getXmax() - intervals[i].getXmin();
+            dx[i] = diff + 1;
+        }
+        int[] powers = this.computePowers(dx);
+
         for (int i = 0; i < size; i++) {
             int k = 0;
             for (int j = 0; j < intervals.length; j++) {
-                Interval<Integer> interval = intervals[j];
-                int dx = interval.getXmax() - interval.getXmin();
-                int index = i % this.powers[k + 1] / this.powers[k];
-                k = dx == 0 ? k : k + 1;
-                y[j] = dx == 0 ? interval.getXmin() : interval.getXmin() + index;
+                int index = i % powers[k + 1] / powers[k];
+                y[j] = intervals[j].getXmin() + index;
+                k++;
             }
             newDenseNDArray.denseNDArray[i] = this.get(y);
         }
+
         return newDenseNDArray;
     }
 
     public DenseNDArray<T> set(String x, DenseNDArray<T> vol) {
         Interval<Integer>[] intervals = getIntervalFromStr(x);
         int size = vol.size();
-        int[] y = new int[dim.length];
+        int[] y = new int[this.dim.length];
+
+        int[] dx = new int[intervals.length];
+        for (int i = 0; i < intervals.length; i++) {
+            int diff = intervals[i].getXmax() - intervals[i].getXmin();
+            dx[i] = diff + 1;
+        }
+        int[] powers = this.computePowers(dx);
+
         for (int i = 0; i < size; i++) {
             int k = 0;
             for (int j = 0; j < intervals.length; j++) {
-                Interval<Integer> interval = intervals[j];
-                int dx = interval.getXmax() - interval.getXmin();
-                int index = i % this.powers[k + 1] / this.powers[k];
-                k = dx == 0 ? k : k + 1;
-                y[j] = dx == 0 ? interval.getXmin() : interval.getXmin() + index;
+                int index = i % powers[k + 1] / powers[k];
+                y[j] = intervals[j].getXmin() + index;
+                k++;
             }
             this.set(y, (T) vol.denseNDArray[i]);
         }
         return this;
+    }
+
+    public int size() {
+        return this.powers[this.powers.length - 1];
+    }
+
+    public int[] getDim() {
+        return this.dim;
+    }
+
+    public int[] shape() {
+        return this.dim;
+    }
+
+    @Override
+    public String toString() {
+        return toStringRecursive(TypedTuple.EMPTY).toString();
+    }
+
+    private StringBuilder toStringRecursive(TypedTuple<Integer> coord) {
+        StringBuilder stringBuilder = new StringBuilder();
+        int size = coord.size();
+        if (size != this.dim.length) {
+            stringBuilder.append("[ ");
+            for (int j = 0; j < this.dim[this.dim.length - 1 - size]; j++) {
+                stringBuilder.append(toStringRecursive(new TypedTuple<>(j).union(coord)));
+            }
+            stringBuilder.append(" ]");
+        } else {
+            stringBuilder.append(StringUtils.interp("{}, ", this.get(coord)));
+        }
+        return stringBuilder;
+    }
+
+    @Override
+    public DenseNDArray<T> copy() {
+        return new DenseNDArray<>(this);
     }
 
     private int[] computeNewDim(Interval<Integer>[] intervals) {
@@ -197,27 +236,10 @@ public class DenseNDArray<T> implements Printable, Copyable<DenseNDArray<T>> {
         return intervals;
     }
 
-    public int size() {
-        return this.powers[this.powers.length - 1];
-    }
-
-    public int[] getDim() {
-        return this.dim;
-    }
-
-    public int[] shape() {
-        return this.dim;
-    }
-
     private int getIndex(int[] x) {
-        int[] aux = {1, 0};
         int index = 0;
-        //special case
-        if(x.length == 1) return x[0];
         for (int i = 0; i < dim.length; i++) {
-            // to be row major like numpy
-            int j = i < 2 ? aux[i] : i;
-            index += x[j] * powers[i];
+            index += x[i] * powers[i];
         }
         return index;
     }
@@ -228,39 +250,24 @@ public class DenseNDArray<T> implements Printable, Copyable<DenseNDArray<T>> {
         }
     }
 
-    @Override
-    public String toString() {
-        return toStringRecursive(TypedTuple.EMPTY).toString();
-    }
-
-    private StringBuilder toStringRecursive(TypedTuple<Integer> coord) {
-        StringBuilder stringBuilder = new StringBuilder();
-
-        int size = coord.size();
-        if (size != this.dim.length) {
-            stringBuilder.append("[ ");
-            for (int j = 0; j < this.dim[this.dim.length - 1 - size]; j++) {
-                stringBuilder.append(toStringRecursive(new TypedTuple<>(j).union(coord)));
-            }
-            stringBuilder.append(" ]");
-        } else {
-            stringBuilder.append(StringUtils.interp("{}, ", this.get(coord)));
+    private int[] computePowers(int[] dim) {
+        int[] powers = new int[dim.length + 1];
+        int acc = 1;
+        powers[0] = acc;
+        for (int i = 0; i < dim.length; i++) {
+            acc *= dim[i];
+            powers[i + 1] = acc;
         }
-        return stringBuilder;
-    }
-
-    @Override
-    public DenseNDArray<T> copy() {
-        return new DenseNDArray<>(this);
+        return powers;
     }
 
     public static class DenseNDArrayBuilder<K> {
+
         private List<DenseNDArray<K>> listOfLowerDimArray;
 
         DenseNDArrayBuilder() {
             this.listOfLowerDimArray = new ArrayList<>();
         }
-
         public DenseNDArrayBuilder<K> add(DenseNDArray<K> array) {
             if (this.listOfLowerDimArray.isEmpty()) {
                 this.listOfLowerDimArray.add(array);
@@ -286,5 +293,23 @@ public class DenseNDArray<T> implements Printable, Copyable<DenseNDArray<T>> {
             }
             return dense;
         }
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        DenseNDArray<?> that = (DenseNDArray<?>) o;
+        return Arrays.equals(denseNDArray, that.denseNDArray) &&
+                Arrays.equals(powers, that.powers) &&
+                Arrays.equals(dim, that.dim);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = Arrays.hashCode(denseNDArray);
+        result = 31 * result + Arrays.hashCode(powers);
+        result = 31 * result + Arrays.hashCode(dim);
+        return result;
     }
 }
