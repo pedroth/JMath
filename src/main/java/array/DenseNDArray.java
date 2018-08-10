@@ -9,10 +9,12 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 
 /**
  * N-dimensional array implementation in column major order
+ *
  * @param <T>
  */
 public class DenseNDArray<T> implements Printable, Copyable<DenseNDArray<T>> {
@@ -93,11 +95,35 @@ public class DenseNDArray<T> implements Printable, Copyable<DenseNDArray<T>> {
         denseNDArray[getIndex(y)] = value;
     }
 
-    public void forEach(Function<T, T> function) {
-        int size = size();
+    public void forEach(Function<T, T> lambda) {
+        int size = this.size();
         for (int i = 0; i < size; i++) {
-            this.denseNDArray[i] = function.apply((T) this.denseNDArray[i]);
+            this.denseNDArray[i] = lambda.apply((T) this.denseNDArray[i]);
         }
+    }
+
+    public <K> DenseNDArray<K> map(Function<T, K> lambda) {
+        DenseNDArray<K> ansArray = new DenseNDArray<>(this.dim);
+        int size = this.size();
+        for (int i = 0; i < size; i++) {
+            ansArray.denseNDArray[i] = lambda.apply((T) this.denseNDArray[i]);
+        }
+        return ansArray;
+    }
+
+    /**
+     *
+     * @param identity identity element of the accOperator
+     * @param accOperator binary operation that combines the identity with elements of the array
+     * @param <K>
+     * @return reduce value
+     */
+    public <K> K reduce(K identity, BiFunction<K, T, K> accOperator) {
+        int size = this.size();
+        for (int i = 0; i < size; i++) {
+            identity =  accOperator.apply(identity, (T) this.denseNDArray[i]);
+        }
+        return identity;
     }
 
     public DenseNDArray<T> get(String x) {
@@ -191,6 +217,24 @@ public class DenseNDArray<T> implements Printable, Copyable<DenseNDArray<T>> {
         return new DenseNDArray<>(this);
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        DenseNDArray<?> that = (DenseNDArray<?>) o;
+        return Arrays.equals(denseNDArray, that.denseNDArray) &&
+                Arrays.equals(powers, that.powers) &&
+                Arrays.equals(dim, that.dim);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = Arrays.hashCode(denseNDArray);
+        result = 31 * result + Arrays.hashCode(powers);
+        result = 31 * result + Arrays.hashCode(dim);
+        return result;
+    }
+
     private int[] computeNewDim(Interval<Integer>[] intervals) {
         List<Integer> dimBuff = new ArrayList<>(intervals.length);
         for (int i = 0; i < intervals.length; i++) {
@@ -261,14 +305,15 @@ public class DenseNDArray<T> implements Printable, Copyable<DenseNDArray<T>> {
         return powers;
     }
 
-    public static class DenseNDArrayBuilder<K> {
+    public static class DenseNDArrayBuilder<T> {
 
-        private List<DenseNDArray<K>> listOfLowerDimArray;
+        private List<DenseNDArray<T>> listOfLowerDimArray;
 
         DenseNDArrayBuilder() {
             this.listOfLowerDimArray = new ArrayList<>();
         }
-        public DenseNDArrayBuilder<K> add(DenseNDArray<K> array) {
+
+        public DenseNDArrayBuilder<T> add(DenseNDArray<T> array) {
             if (this.listOfLowerDimArray.isEmpty()) {
                 this.listOfLowerDimArray.add(array);
             } else {
@@ -282,34 +327,31 @@ public class DenseNDArray<T> implements Printable, Copyable<DenseNDArray<T>> {
             return this;
         }
 
-        public DenseNDArray<K> build() {
+        public DenseNDArrayBuilder<T> add(T[] array) {
+            return this.add(new DenseNDArray<>(array, new int[]{array.length}));
+        }
+
+        public DenseNDArrayBuilder<T> add(T[][] array) {
+            DenseNDArray<T> denseNDArray = new DenseNDArray<>(new int[]{array[0].length, array.length});
+            for (int i = 0; i < array[0].length; i++) {
+                for (int j = 0; j < array.length; j++) {
+                    denseNDArray.set(TypedTuple.of(i, j), array[j][i]);
+                }
+            }
+            return this.add(denseNDArray);
+        }
+
+        public DenseNDArray<T> build() {
             int[] dim = this.listOfLowerDimArray.get(0).getDim();
             int size = this.listOfLowerDimArray.size();
             int[] concat = ArrayUtils.concat(dim, size);
-            DenseNDArray<K> dense = new DenseNDArray<>(concat);
+            DenseNDArray<T> dense = new DenseNDArray<>(concat);
             for (int i = 0; i < size; i++) {
-                DenseNDArray<K> vol = listOfLowerDimArray.get(i);
+                DenseNDArray<T> vol = listOfLowerDimArray.get(i);
                 dense.set(StringUtils.interp("{}{}", StringUtils.mult(":,", vol.dim.length), i), vol);
             }
             return dense;
         }
-    }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        DenseNDArray<?> that = (DenseNDArray<?>) o;
-        return Arrays.equals(denseNDArray, that.denseNDArray) &&
-                Arrays.equals(powers, that.powers) &&
-                Arrays.equals(dim, that.dim);
-    }
-
-    @Override
-    public int hashCode() {
-        int result = Arrays.hashCode(denseNDArray);
-        result = 31 * result + Arrays.hashCode(powers);
-        result = 31 * result + Arrays.hashCode(dim);
-        return result;
     }
 }

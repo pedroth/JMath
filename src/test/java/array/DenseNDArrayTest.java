@@ -12,15 +12,15 @@ public class DenseNDArrayTest {
     @Test
     public void basicTest() {
         final DenseNDArray<Double> denseNDArray = new DenseNDArray<>(new Double[]{1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0}, new int[]{3, 3});
-        Assert.assertEquals(denseNDArray.get(TypedTuple.of(0,0)), 1.0, 1E-10);
-        Assert.assertEquals(denseNDArray.get(TypedTuple.of(1,2)), 8.0, 1E-10);
-        Assert.assertEquals(denseNDArray.get(TypedTuple.of(0,2)), 7.0, 1E-10);
-        Assert.assertEquals(denseNDArray.get(TypedTuple.of(2,1)), 6.0, 1E-10);
+        Assert.assertEquals(denseNDArray.get(TypedTuple.of(0, 0)), 1.0, 1E-10);
+        Assert.assertEquals(denseNDArray.get(TypedTuple.of(1, 2)), 8.0, 1E-10);
+        Assert.assertEquals(denseNDArray.get(TypedTuple.of(0, 2)), 7.0, 1E-10);
+        Assert.assertEquals(denseNDArray.get(TypedTuple.of(2, 1)), 6.0, 1E-10);
 
-        final DenseNDArray<Double> denseNDArray1 = new DenseNDArray<>(denseNDArray, new int[]{9,1});
-        Assert.assertEquals(denseNDArray1.get(TypedTuple.of(0,0)), 1.0, 1E-10);
-        Assert.assertEquals(denseNDArray1.get(TypedTuple.of(4,0)), 5.0, 1E-10);
-        Assert.assertEquals(denseNDArray1.get(TypedTuple.of(8,0)), 9.0, 1E-10);
+        final DenseNDArray<Double> denseNDArray1 = new DenseNDArray<>(denseNDArray, new int[]{9, 1});
+        Assert.assertEquals(denseNDArray1.get(TypedTuple.of(0, 0)), 1.0, 1E-10);
+        Assert.assertEquals(denseNDArray1.get(TypedTuple.of(4, 0)), 5.0, 1E-10);
+        Assert.assertEquals(denseNDArray1.get(TypedTuple.of(8, 0)), 9.0, 1E-10);
 
         final DenseNDArray<Double> denseNDArray2 = new DenseNDArray<>(denseNDArray, new int[]{9});
         Assert.assertEquals(denseNDArray2.get(TypedTuple.of(0)), 1.0, 1E-10);
@@ -32,7 +32,7 @@ public class DenseNDArrayTest {
     }
 
 
-        @Test
+    @Test
     public void denseTest() {
         DenseNDArray<Integer> table = new DenseNDArray<>(new int[]{3, 3, 3});
         for (int i = 0; i < 3; i++) {
@@ -72,22 +72,42 @@ public class DenseNDArrayTest {
 
         DenseNDArray<Integer> denseNDArray = table.get("1:,0:,:1");
         Assert.assertTrue(Arrays.equals(denseNDArray.getDim(), new int[]{2, 3, 2}));
-        Assert.assertTrue(denseNDArray.get(TypedTuple.of(0,0,1)) == 100);
-        Assert.assertTrue(denseNDArray.get(TypedTuple.of(1,1,0)) == 5);
-        Assert.assertTrue(denseNDArray.get(TypedTuple.of(1,2,1)) == 17);
+        Assert.assertTrue(denseNDArray.get(TypedTuple.of(0, 0, 1)) == 100);
+        Assert.assertTrue(denseNDArray.get(TypedTuple.of(1, 1, 0)) == 5);
+        Assert.assertTrue(denseNDArray.get(TypedTuple.of(1, 2, 1)) == 17);
     }
 
     @Test
     public void denseCreationTest() {
-        DenseNDArray array = new DenseNDArray(new Double[]{1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0}, new int[]{3, 3});
-        DenseNDArray cube = DenseNDArray.builder()
-                                        .add(array)
-                                        .add(array)
-                                        .add(array)
-                                        .build();
+        DenseNDArray<Double> array = new DenseNDArray<>(new Double[]{1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0}, new int[]{3, 3});
+        DenseNDArray<Double> cube = DenseNDArray.builder().add(array).add(array).add(array).build();
         Assert.assertTrue(Arrays.equals(new int[]{3, 3, 3}, cube.getDim()));
         Assert.assertTrue(array.equals(cube.get(":,:,0")));
         Assert.assertTrue(array.equals(cube.get(":,:,1")));
         Assert.assertTrue(array.equals(cube.get(":,:,2")));
+        DenseNDArray<Integer> secondArray = DenseNDArray.builder().add(new Integer[]{1, 2, 3}).add(new Integer[]{4, 5, 6}).build();
+        Assert.assertTrue(secondArray.get(new int[]{0, 1}) == 4);
+        Assert.assertTrue(secondArray.get(new int[]{1, 1}) == 5);
+        Assert.assertTrue(secondArray.get(new int[]{2, 0}) == 3);
+        DenseNDArray<Integer> thirdArray = DenseNDArray.builder().add(new Integer[][]{{1, 2, 3}, {4, 5, 6}}).add(new Integer[][]{{7, 8, 9}, {10, 11, 12}}).build();
+        Assert.assertTrue(thirdArray.get(new int[]{0, 1, 0}) == 4);
+        Assert.assertTrue(thirdArray.get(new int[]{1, 1, 0}) == 5);
+        Assert.assertTrue(thirdArray.get(new int[]{2, 0, 0}) == 3);
+        Assert.assertTrue(thirdArray.get(new int[]{2, 0, 1}) == 9);
+    }
+
+
+    @Test
+    public void mapTest() {
+        DenseNDArray<Integer> array = new DenseNDArray<>(new Integer[]{1, 2, 3, 4, 5, 6, 7, 8, 9}, new int[]{3, 3});
+        DenseNDArray<Integer> arraySq = new DenseNDArray<>(new Integer[]{1, 4, 9, 16, 25, 36, 49, 64, 81}, new int[]{3, 3});
+        Assert.assertTrue(array.map(x -> x * x).equals(arraySq));
+    }
+
+    @Test
+    public void reduceTest() {
+        int n = 10;
+        DenseNDArray<Integer> array = new DenseNDArray<>(new Integer[]{1, 2, 3, 4, 5, 6, 7, 8, 9}, new int[]{3, 3});
+        Assert.assertEquals(array.reduce(0.0, (x, y) -> x + y), n * (n - 1) / 2.0, 1E-10);
     }
 }
