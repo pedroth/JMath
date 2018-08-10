@@ -6,6 +6,7 @@ import tuple.TypedTuple;
 import utils.ArrayUtils;
 
 import java.util.Arrays;
+import java.util.function.Function;
 
 public class DenseNDArrayTest {
 
@@ -107,7 +108,22 @@ public class DenseNDArrayTest {
     @Test
     public void reduceTest() {
         int n = 10;
+        double sum = n * (n - 1) / 2.0;
         DenseNDArray<Integer> array = new DenseNDArray<>(new Integer[]{1, 2, 3, 4, 5, 6, 7, 8, 9}, new int[]{3, 3});
-        Assert.assertEquals(array.reduce(0.0, (x, y) -> x + y), n * (n - 1) / 2.0, 1E-10);
+        Assert.assertEquals(array.reduce(0.0, (x, y) -> x + y), sum, 1E-10);
+        array.forEach(System.out::println);
+        SingletonAcumulator acc = new SingletonAcumulator();
+        array.forEach(acc::add);
+        Assert.assertEquals(acc.acc, sum, 1E-10);
+    }
+
+    static final class SingletonAcumulator {
+        int acc = 0;
+
+        SingletonAcumulator() { }
+
+        void add(int value) {
+            this.acc += value;
+        }
     }
 }

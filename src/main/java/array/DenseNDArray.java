@@ -10,6 +10,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.BiFunction;
+import java.util.function.Consumer;
 import java.util.function.Function;
 
 /**
@@ -95,10 +96,10 @@ public class DenseNDArray<T> implements Printable, Copyable<DenseNDArray<T>> {
         denseNDArray[getIndex(y)] = value;
     }
 
-    public void forEach(Function<T, T> lambda) {
+    public void forEach(Consumer<T> lambda) {
         int size = this.size();
         for (int i = 0; i < size; i++) {
-            this.denseNDArray[i] = lambda.apply((T) this.denseNDArray[i]);
+            lambda.accept((T) this.denseNDArray[i]);
         }
     }
 
