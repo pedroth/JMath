@@ -4,6 +4,7 @@ import org.junit.Assert;
 import org.junit.Test;
 import tuple.TypedTuple;
 import utils.ArrayUtils;
+import utils.StringUtils;
 
 import java.util.Arrays;
 import java.util.function.Function;
@@ -43,7 +44,7 @@ public class DenseNDArrayTest {
                 }
             }
         }
-        System.out.println(table);
+        System.out.println(StringUtils.interp("table : {}", table));
 
         Assert.assertTrue(table.get("1,:,:").get(new int[]{0, 0}) == 1);
         Assert.assertTrue(table.get("1,:,:").get(new int[]{1, 1}) == 13);
@@ -51,7 +52,8 @@ public class DenseNDArrayTest {
         Assert.assertTrue(table.get("1,:,:").get(new int[]{2, 1}) == 16);
 
         DenseNDArray<Integer> secondTable = table.get("0 : 1, 1 : 2 , : ");
-        System.out.println(secondTable);
+        System.out.println(StringUtils.interp("secondTable : {}", secondTable));
+
         Assert.assertTrue(secondTable.get(new int[]{1, 1, 0}) == 7);
         Assert.assertTrue(secondTable.get(new int[]{1, 1, 1}) == 16);
         Assert.assertTrue(secondTable.get(new int[]{1, 1, 2}) == 25);
@@ -95,6 +97,9 @@ public class DenseNDArrayTest {
         Assert.assertTrue(thirdArray.get(new int[]{1, 1, 0}) == 5);
         Assert.assertTrue(thirdArray.get(new int[]{2, 0, 0}) == 3);
         Assert.assertTrue(thirdArray.get(new int[]{2, 0, 1}) == 9);
+
+        DenseNDArray build = DenseNDArray.builder().add(new Integer[][]{{1, 2}, {3, 4}, {5, 6}}).build();
+        Assert.assertTrue(Arrays.equals(build.shape(), new int[]{2, 3}));
     }
 
 
@@ -120,7 +125,8 @@ public class DenseNDArrayTest {
     static final class SingletonAcumulator {
         int acc = 0;
 
-        SingletonAcumulator() { }
+        SingletonAcumulator() {
+        }
 
         void add(int value) {
             this.acc += value;

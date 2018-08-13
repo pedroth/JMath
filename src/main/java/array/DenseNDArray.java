@@ -129,19 +129,18 @@ public class DenseNDArray<T> implements Printable, Copyable<DenseNDArray<T>> {
 
     public DenseNDArray<T> get(String x) {
         Interval<Integer>[] intervals = getIntervalFromStr(x);
-
         int[] newDim = computeNewDim(intervals);
-        DenseNDArray<T> newDenseNDArray = new DenseNDArray<>(newDim.length == 0 ? new int[]{1} : newDim);
 
-        int[] y = new int[this.dim.length];
+        DenseNDArray<T> newDenseNDArray = new DenseNDArray<>(newDim);
 
         int size = newDenseNDArray.size();
-
+        int[] y = new int[this.dim.length];
         int[] dx = new int[intervals.length];
+
         for (int i = 0; i < intervals.length; i++) {
-            int diff = intervals[i].getXmax() - intervals[i].getXmin();
-            dx[i] = diff + 1;
+            dx[i] = intervals[i].getXmax() - intervals[i].getXmin() + 1;
         }
+
         int[] powers = this.computePowers(dx);
 
         for (int i = 0; i < size; i++) {
@@ -159,14 +158,15 @@ public class DenseNDArray<T> implements Printable, Copyable<DenseNDArray<T>> {
 
     public DenseNDArray<T> set(String x, DenseNDArray<T> vol) {
         Interval<Integer>[] intervals = getIntervalFromStr(x);
+
         int size = vol.size();
         int[] y = new int[this.dim.length];
-
         int[] dx = new int[intervals.length];
+
         for (int i = 0; i < intervals.length; i++) {
-            int diff = intervals[i].getXmax() - intervals[i].getXmin();
-            dx[i] = diff + 1;
+            dx[i] = intervals[i].getXmax() - intervals[i].getXmin() + 1;
         }
+
         int[] powers = this.computePowers(dx);
 
         for (int i = 0; i < size; i++) {
@@ -345,6 +345,9 @@ public class DenseNDArray<T> implements Printable, Copyable<DenseNDArray<T>> {
         public DenseNDArray<T> build() {
             int[] dim = this.listOfLowerDimArray.get(0).getDim();
             int size = this.listOfLowerDimArray.size();
+            if (size == 1) {
+                return listOfLowerDimArray.get(0);
+            }
             int[] concat = ArrayUtils.concat(dim, size);
             DenseNDArray<T> dense = new DenseNDArray<>(concat);
             for (int i = 0; i < size; i++) {
