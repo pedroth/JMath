@@ -12,7 +12,7 @@ import java.util.function.Function;
 public class DenseNDArrayTest {
 
     @Test
-    public void basicTest() {
+    public void testBasic() {
         final DenseNDArray<Double> denseNDArray = new DenseNDArray<>(new Double[]{1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0}, new int[]{3, 3});
         Assert.assertEquals(denseNDArray.get(TypedTuple.of(0, 0)), 1.0, 1E-10);
         Assert.assertEquals(denseNDArray.get(TypedTuple.of(1, 2)), 8.0, 1E-10);
@@ -35,7 +35,7 @@ public class DenseNDArrayTest {
 
 
     @Test
-    public void denseTest() {
+    public void testDense() {
         DenseNDArray<Integer> table = new DenseNDArray<>(new int[]{3, 3, 3});
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 3; j++) {
@@ -81,7 +81,7 @@ public class DenseNDArrayTest {
     }
 
     @Test
-    public void denseCreationTest() {
+    public void testDenseCreation() {
         DenseNDArray<Double> array = new DenseNDArray<>(new Double[]{1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0}, new int[]{3, 3});
         DenseNDArray<Double> cube = DenseNDArray.builder().add(array).add(array).add(array).build();
         Assert.assertTrue(Arrays.equals(new int[]{3, 3, 3}, cube.getDim()));
@@ -99,19 +99,21 @@ public class DenseNDArrayTest {
         Assert.assertTrue(thirdArray.get(new int[]{2, 0, 1}) == 9);
 
         DenseNDArray build = DenseNDArray.builder().add(new Integer[][]{{1, 2}, {3, 4}, {5, 6}}).build();
+        DenseNDArray buildEqual = new DenseNDArray(new Integer[]{1, 2, 3, 4, 5, 6}, new int[]{2, 3});
         Assert.assertTrue(Arrays.equals(build.shape(), new int[]{2, 3}));
+        Assert.assertTrue(build.equals(buildEqual));
     }
 
 
     @Test
-    public void mapTest() {
+    public void testMap() {
         DenseNDArray<Integer> array = new DenseNDArray<>(new Integer[]{1, 2, 3, 4, 5, 6, 7, 8, 9}, new int[]{3, 3});
         DenseNDArray<Integer> arraySq = new DenseNDArray<>(new Integer[]{1, 4, 9, 16, 25, 36, 49, 64, 81}, new int[]{3, 3});
         Assert.assertTrue(array.map(x -> x * x).equals(arraySq));
     }
 
     @Test
-    public void reduceTest() {
+    public void testReduce() {
         int n = 10;
         double sum = n * (n - 1) / 2.0;
         DenseNDArray<Integer> array = new DenseNDArray<>(new Integer[]{1, 2, 3, 4, 5, 6, 7, 8, 9}, new int[]{3, 3});
