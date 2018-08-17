@@ -193,6 +193,10 @@ public class DenseNDArray<T> implements Printable, Copyable<DenseNDArray<T>> {
         return this.dim;
     }
 
+    public DenseNDArray<T> reshape(int[] newShape) {
+        return new DenseNDArray<>(this, newShape);
+    }
+
     @Override
     public String toString() {
         return toStringRecursive(TypedTuple.EMPTY).toString();

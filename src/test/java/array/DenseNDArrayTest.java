@@ -124,6 +124,13 @@ public class DenseNDArrayTest {
         Assert.assertEquals(acc.acc, sum, 1E-10);
     }
 
+    @Test
+    public void testReshape() {
+        DenseNDArray<Integer> array = new DenseNDArray<>(new Integer[]{1, 2, 3, 4, 5, 6}, new int[]{3, 2});
+        DenseNDArray<Integer> arrayReshape = new DenseNDArray<>(new Integer[]{1, 2, 3, 4, 5, 6}, new int[]{2, 3});
+        Assert.assertEquals(array.reshape(new int[]{2,3}), arrayReshape);
+    }
+
     static final class SingletonAcumulator {
         int acc = 0;
 
