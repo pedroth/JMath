@@ -275,7 +275,7 @@ public class DenseNDArray<T> implements Printable, Copyable<DenseNDArray<T>> {
                     int xmax = (int) MathUtil.clamp("".equals(intervalBounds[1]) ? this.dim[i] - 1 : Integer.valueOf(intervalBounds[1]), 0, dim[i] - 1);
                     Interval<Integer> myInterval = new Interval<>(xmin, xmax);
                     if (myInterval.isEmptyInterval()) {
-                        throw new RuntimeException("empty interval xmax : " + xmax + " < xmin : " + xmin);
+                        throw new MatrixRunTimeException("empty interval xmax : " + xmax + " < xmin : " + xmin);
                     }
                     intervals[i] = myInterval;
                     break;
