@@ -113,8 +113,7 @@ public class DenseNDArray<T> implements Printable, Copyable<DenseNDArray<T>> {
     }
 
     /**
-     *
-     * @param identity identity element of the accOperator
+     * @param identity    identity element of the accOperator
      * @param accOperator binary operation that combines the identity with elements of the array
      * @param <K>
      * @return reduce value
@@ -122,7 +121,7 @@ public class DenseNDArray<T> implements Printable, Copyable<DenseNDArray<T>> {
     public <K> K reduce(K identity, BiFunction<K, T, K> accOperator) {
         int size = this.size();
         for (int i = 0; i < size; i++) {
-            identity =  accOperator.apply(identity, (T) this.denseNDArray[i]);
+            identity = accOperator.apply(identity, (T) this.denseNDArray[i]);
         }
         return identity;
     }
@@ -308,6 +307,30 @@ public class DenseNDArray<T> implements Printable, Copyable<DenseNDArray<T>> {
             powers[i + 1] = acc;
         }
         return powers;
+    }
+
+    public static <T> DenseNDArray<T> of(T element) {
+        return new DenseNDArray<>(element);
+    }
+
+    public static <T> DenseNDArray<T> of(T[] elements, int[] dim) {
+        return new DenseNDArray<>(elements, dim);
+    }
+
+    public static <T> DenseNDArray<T> of(DenseNDArray denseNDArray) {
+        return new DenseNDArray<>(denseNDArray);
+    }
+
+    public static <T> DenseNDArray<T> of(DenseNDArray denseNDArray, int[] dim) {
+        return new DenseNDArray<>(denseNDArray, dim);
+    }
+
+    public static <T> DenseNDArray of(T[][] array) {
+        return DenseNDArray.builder().add(array).build();
+    }
+
+    public static <T> DenseNDArray of(T[] array) {
+        return DenseNDArray.builder().add(array).build();
     }
 
     public static class DenseNDArrayBuilder<T> {

@@ -4,7 +4,7 @@ import utils.Copyable;
 
 import java.util.function.Function;
 
-public interface AlgebraicField<T extends AlgebraicField> extends Copyable<T> {
+public interface AlgebraicField<T> extends Copyable<T> {
     T add(T a);
 
     T sub(T a);
